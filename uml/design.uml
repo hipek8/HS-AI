@@ -1,0 +1,99 @@
+@startuml
+Game *-- "2" Player
+Player *-- Battlefield
+Player *-- Deck
+Player *-- Hand
+Player *-- Hero
+Player *-- ManaPool
+Hero *-- HeroPower
+Hero *-- Weapon
+
+Hand *-- Card
+Battlefield *-- Card
+Deck *-- Card
+
+Card <|-- Minion
+Card <|-- Spell
+Card <|-- Weapon
+
+class Player {
+    battlefield
+    deck
+    hand
+    hero
+    mana_pool
+
+    [Action] get_all_actions()
+}
+
+class Action {
+    requierements
+    consequences
+
+    bool possible()
+}
+
+class Hero {
+    life
+    power
+    armor
+    weapon
+    hero_power
+    secrets
+}
+
+class ManaPool {
+    current_mana
+    base_mana
+
+    refresh()
+    bool ramp_up(int)
+    add_temporary(int)
+    add_overload(int)
+    use_mana(int)
+    destroy_crystal()
+    
+}
+
+class Deck {
+    cards
+
+    draw(int)
+    reveal_card()
+
+}
+
+class Hand {
+    cards
+
+    discard()
+}
+
+class Weapon {
+    base_power
+    current_power
+    base_durability
+    current_durability
+
+    destroy()
+}
+
+class Minion {
+    base_power
+    current_power
+    base_health
+    current_health
+    damage_dealt
+    type
+    abilities
+
+    attack_minion(Minion)
+    attack_hero(Hero)
+}
+
+class Spell {
+    cast()
+}
+
+
+@enduml
