@@ -1,0 +1,13 @@
+There are 2 players in each game. The game is turn-based, each turn player can take some actions: play cards from his hand (many times a turn), use hero power (once a turn), attack with his minions (once a turn each), attack with his hero (once a turn).
+
+Some examples for requirements and consequences of an action are: you can play a card if you have enough mana. Each card can do sth: either put a minion into the battlefield or deal some damage or many other options. You can attack with a minion if he wasn't played this turn (unless he's got a charge). If the minion attack antoher character, both of them loose health equal to opponnent's attack. If minion attacks a hero, then only the hero is loosing the health.
+
+Each player has his battlefiend, where minions can be played, hero, mana crystals pool, deck of cards and hand, where every turn one card is moved from the deck. There are also a few cards from deck located in the hand at the beginning of the game. 
+
+Each hero has his health and hero power. Heroes can also have power, armor, weapon equipped, secrets. Each turn they can attack a minion or a hero (if they have at least 1 point of power) or use a hero power.
+
+All the cards that player has in his deck has a type which can be either minion, spell or weapon. All of these types of cards have different abilities.
+
+Cards can sometimes have some special abilities. For example: at the start of your turn double minion's attack.
+
+Some cards' effects aren't visible immiedietly. E.g. when secrets are played. They are activated when an opponent make the exact action which is required.
