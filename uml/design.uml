@@ -1,6 +1,10 @@
 @startuml
 Game *-- "2" Player
-Player *-- Battlefield
+Player *-- Battlefieldl;'n    
+
+
+
+}} '
 Player *-- Deck
 Player *-- Hand
 Player *-- Hero
@@ -16,6 +20,15 @@ Card <|-- Minion
 Card <|-- Spell
 Card <|-- Weapon
 
+class Game {
+    turn
+    active_player
+
+    start_game()
+    set_winner()
+    end_game()    
+}
+
 class Player {
     battlefield
     deck
@@ -30,7 +43,7 @@ class Action {
     requierements
     consequences
 
-    bool possible()
+    bool is_possible()
 }
 
 class Hero {
@@ -40,6 +53,10 @@ class Hero {
     weapon
     hero_power
     secrets
+
+    attack_minion()
+    attack_hero()
+    use_hero_power()
 }
 
 class ManaPool {
@@ -69,11 +86,20 @@ class Hand {
     discard()
 }
 
+class Card {
+    type
+    mana_cost
+    overload
+
+    discover()
+}
+
 class Weapon {
     base_power
     current_power
     base_durability
     current_durability
+    abilities
 
     destroy()
 }
@@ -86,14 +112,52 @@ class Minion {
     damage_dealt
     type
     abilities
+    if_played_this_turn
 
     attack_minion(Minion)
     attack_hero(Hero)
 }
 
 class Spell {
+    Action
+
     cast()
 }
 
+class Minion_abilities {
+    stealth
+    charge
+    deathreattle
+    taunt
+    divine_shield
+    windfury
+    inspire
+    battlecry
+    special_minion_abilities
+}
+
+class Special_minion_abilitioes {
+    at_the_end_of_your_turn
+    at_the_start_of_your_turn
+    whenever_you_play_a_minion
+    whenever_you_cast_a_spell
+    whenever_opponent_plays_a_minion
+    whenever_opponent_casts_a_spell
+    whenever_you_equip_a_weapon
+    whenever_you_target_this_minion_with_a_spell
+    whenever_you_target_another_friendly_minion_with_a_spell
+}
+
+class Weapon_abilities {
+    windfury
+    battlecry
+    deathreattle
+    special_weapon_abilities
+}
+
+class Special_weapon_abilities {
+    whenever_you_play_a_minion
+    whenever_your_secret_is_activated
+}
 
 @enduml
