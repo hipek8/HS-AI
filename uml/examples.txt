@@ -1,0 +1,46 @@
+Scenario 1:
+ * Player1 has vaporize, Player2 has some minion on the battlefield
+
+    # more-or-less
+    class Vaporize(Secret):
+        # spell resolves if nothing stops it when reacting to SpellCast event
+        # (could be Counterspell), should resolve be consequence of its own 
+        # SpellCast event with lower priority than counterspell??
+
+        def resolve(self):
+            super(Vaporize, self).resolve()
+            game.event_proxy.subscribe(self, AttackOnPlayer, 
+                    parameter_filter = {
+                        'attacked_character' : find_owner_somehow_lol().hero
+                    } 
+            )
+
+        # should "activate" be method of secret or method of ability of a secret
+        # reason behind it being separate ability is that it triggers in a way 
+        # similar to e.g. deathratlle or inspire, inheritance might help
+        # but it also adds some (unnecessary?) complexity
+
+        def activate(self):
+            super(Vaporize, self).activate()    # Secret class should handle
+                                                # sending appropriate events
+            event.attacking_character.destroy()   
+
+        # message AttackOnPlayer received
+        def message(self, event):
+            self.activate()
+
+    p1 = game.players[0]
+    p2 = game.players[1]
+    minion = AngryChicken()
+    p2.battlefield = [minion]
+    vape = Vaporize()
+    p1.hero.hand = [vape]
+    vape.cast()
+    # now vape is in p1.hero.secrets list
+    
+    p1.pass_turn()
+    p2.minions[0].attack_character(p1)
+    # event AttackOnPlayer is sent to event_proxy which sends it further to
+    # secret, vaporize reacts with activation leading to destruction of attacking minion
+
+WELL NOW HOW TO MAKE IT WORK AUTOMATICALLY???

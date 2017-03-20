@@ -1,5 +1,8 @@
 @startuml
 Game *-- "2" Player
+Game *-- EventProxy
+EventProxy *-- Subscription
+
 Player *-- Battlefield
 Player *-- Deck
 Player *-- Hand
@@ -7,24 +10,25 @@ Player *-- Hero
 Player *-- ManaPool
 Hero *-- HeroPower
 Hero *-- Weapon
-
-Hand *-- Card
-Battlefield *-- Card
-Deck *-- Card
+Character <|-- Hero
+Character <|-- Minion
 
 Card <|-- Minion
 Card <|-- Spell
 Card <|-- Weapon
+Spell <|-- Secret
 
-Minion <|-- Minion_abilities
-Minion_abilities <|-- Special_minion_abilities
-Weapon <|-- Weapon_abilities
-Weapon_abilities <|-- Special_weapon_abilities
+Minion *-- MinionAbilities
+MinionAbilities *-- SpecialMinionAbilities
+Weapon *-- WeaponAbilities
+WeaponAbilities *-- SpecialWeaponAbilities
 
 class Game {
     turn
     active_player
+    event_proxy
 
+    draw_state()
     start_game()
     set_winner()
     end_game()    
@@ -37,6 +41,8 @@ class Player {
     hero
     mana_pool
 
+    mulligan()
+    pass_turn()
     [Action] get_all_actions()
 }
 
@@ -47,6 +53,10 @@ class Action {
     bool is_possible()
 }
 
+class Character {
+    attack_character(target)
+}
+
 class Hero {
     life
     power
@@ -55,8 +65,6 @@ class Hero {
     hero_power
     secrets
 
-    attack_minion()
-    attack_hero()
     use_hero_power()
 }
 
@@ -73,17 +81,23 @@ class ManaPool {
     
 }
 
+class Battlefield {
+    minions
+
+    put(minion, left_of=None)
+}
+
 class Deck {
     cards
 
     draw(int)
     reveal_card()
-
 }
 
 class Hand {
     cards
 
+    add_card()
     discard()
 }
 
@@ -109,26 +123,28 @@ class Minion {
     base_power
     current_power
     base_health
+    maximum_health
     current_health
-    damage_dealt
-    type
+    subtype
     abilities
     if_played_this_turn
 
-    attack_minion(Minion)
-    attack_hero(Hero)
+    destroy()
 }
 
 class Spell {
-    Action
-
     cast()
+    resolve()
 }
 
-class Minion_abilities {
+class Secret {
+    activate()
+}
+
+class MinionAbilities {
     stealth
     charge
-    deathreattle
+    deathrattle
     taunt
     divine_shield
     windfury
@@ -137,7 +153,7 @@ class Minion_abilities {
     special_minion_abilities
 }
 
-class Special_minion_abilities {
+class SpecialMinionAbilities {
     at_the_end_of_your_turn
     at_the_start_of_your_turn
     whenever_you_play_a_minion
@@ -149,16 +165,74 @@ class Special_minion_abilities {
     whenever_you_target_another_friendly_minion_with_a_spell
 }
 
-class Weapon_abilities {
+class WeaponAbilities {
     windfury
     battlecry
     deathreattle
     special_weapon_abilities
 }
 
-class Special_weapon_abilities {
+class SpecialWeaponAbilities {
     whenever_you_play_a_minion
     whenever_your_secret_is_activated
+}
+
+class Subscription {
+    source
+    event_type
+    parameter_filter
+    priority
+}
+
+class EventProxy {
+    history
+    [list or dict] subscriptions
+
+    subscribe(source, event_type, dict parameter_filter, priority = 10)
+    send(event)
+    _broadcast(event)
+}
+
+class TargetHelpers {
+    valid_attack_targets(attacking_character)
+    valid_spell_targets(spell)
+    battlefield_postions(minion)
+    friend_or_foe(card, character)
+}
+
+class ZoneHelpers {
+    on_the_battlefield(card)
+    in_the_hand(card)
+    in_the_deck(card)
+    owner(card)
+}
+
+class CombatHelpers {
+    fight(attacker, defender)
+}
+
+Event <|-- Attack
+Attack <|-- AttackOnMinion
+Attack <|-- AttackOnPlayer
+Event <|-- CardDrawn
+Event <|-- DamageDealt
+Event <|-- EndOfTurn
+Event <|-- BeginningOfTurn
+Event <|-- MinionDies
+Event <|-- HeroPowerUsed
+Event <|-- CharacterHealed
+Event <|-- MinionSummoned
+MinionSummoned <|-- MinionPlayed
+Event <|-- CardPlayed
+Event <|-- Overload
+Event <|-- WeaponEquipped
+Event <|-- SpellCast
+SpellCast <|-- SecretPlayed
+Event <|-- SecretActivated
+
+class Attack {
+    attacking_character
+    attacked_character
 }
 
 @enduml
